@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Value Helper</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="title">Item Value Helper</div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab is-active" data-tab="browse">Browse</button>
+        <button class="tab" data-tab="edit">Editor</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <!-- LEFT -->
+      <section class="panel left">
+        <div class="panelHeader">
+          <div class="panelTitle">Items</div>
+          <input id="itemSearch" class="input" placeholder="Search..." />
+        </div>
+        <div id="itemList" class="itemList"></div>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="panel right">
+        <!-- Browse -->
+        <div id="viewBrowse" class="view is-active">
+          <div class="panelHeader">
+            <div>
+              <div id="selectedItemName" class="panelTitle">Select an item</div>
+              <div id="selectedItemValue" class="muted"></div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="cardTitle">Affix Values</div>
+              <div id="affixPriceTable" class="tableWrap"></div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Combo Builder</div>
+              <div id="affixChecklist" class="checklist"></div>
+
+              <div class="comboSummary">
+                <div class="line">
+                  <span class="muted">Multiplier</span>
+                  <span id="comboMultiplier" class="mono">—</span>
+                </div>
+                <div class="line">
+                  <span class="muted">Value</span>
+                  <span id="comboValue" class="mono big">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardTitle">All Combos</div>
+            <div id="comboTable" class="tableWrap"></div>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div id="viewEdit" class="view">
+          <div class="panelHeader">
+            <div class="panelTitle">Editor</div>
+            <div class="row">
+              <button id="btnResetDefaults" class="btn danger">Reset</button>
+              <button id="btnExport" class="btn">Export</button>
+              <button id="btnImport" class="btn">Import</button>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="cardTitle">Items</div>
+              <input id="newItemName" class="input" placeholder="Name" />
+              <input id="newItemValue" class="input" placeholder="Base Value" inputmode="decimal" />
+              <button id="btnAddItem" class="btn primary">Add Item</button>
+              <div id="editorItems" class="editorList"></div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Affixes</div>
+              <input id="newAffixName" class="input" placeholder="Name" />
+              <input id="newAffixMult" class="input" placeholder="Multiplier" inputmode="decimal" />
+              <button id="btnAddAffix" class="btn primary">Add Affix</button>
+              <div id="editorAffixes" class="editorList"></div>
+            </div>
+          </div>
+
+          <input id="fileImport" type="file" accept="application/json" class="hidden" />
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.defaults.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
