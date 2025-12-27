@@ -93,14 +93,21 @@ body::before{
 }
 
 .panel.left{
-  height: calc(100vh - 120px);
   display:flex;
   flex-direction:column;
+
+  max-height: calc(100vh - 120px); /* fills the current visible Y */
+  overflow: hidden;                /* keeps scrolling inside the list */
+  min-height: 0;
+}
+
+/* when topbar is hidden, reclaim that space */
+body.no-topbar .panel.left{
+  max-height: calc(100vh - 36px);
 }
 
 .panelHeader{
   padding:14px;
-  border-bottom:1px solid var(--border);
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -124,10 +131,16 @@ body::before{
 .input:focus{ border-color: rgba(192,24,59,.55); }
 
 .itemList{
-  padding:12px;
-  display:grid;
-  gap:10px;
-  overflow:auto;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+
+  align-content: start;        /* ✅ prevents “fill the div” stretching */
+  grid-auto-rows: max-content; /* ✅ keep each itemRow its natural height */
 }
 
 .itemRow{
@@ -135,11 +148,30 @@ body::before{
   border:1px solid var(--border);
   border-radius:14px;
   cursor:pointer;
-  background: rgba(255,255,255,.02);
+  background: rgba(255,255,255,.02); /* FIXED */
   transition: transform .08s ease, border-color .12s ease;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
-.itemRow:hover{ transform: translateY(-1px); border-color: rgba(192,24,59,.35); }
-.itemRow.is-active{ border-color: rgba(65,211,138,.55); background: rgba(65,211,138,.06); }
+
+.itemRow:hover{
+  transform: translateY(-1px);
+  border-color: rgba(192,24,59,.35);
+}
+
+.itemRow.is-active{
+  border-color: rgba(65,211,138,.55);
+  background: rgba(65,211,138,.06);
+}
+
+/* value stays right */
+.itemRow .muted{
+  margin-left:auto;
+  text-align:right;
+  white-space:nowrap;
+}
 
 .view{ display:none; padding:14px }
 .view.is-active{ display:block }
@@ -195,7 +227,7 @@ body::before{
 .comboSummary{
   margin-top:12px;
   padding-top:12px;
-  border-top:1px solid rgba(255,255,255,.06);
+  border-top:1px solid rgba(255, 0, 0, 0.06);
 }
 .comboSummary .line{ display:flex; justify-content:space-between; padding:6px 0; }
 
