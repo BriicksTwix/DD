@@ -1,12 +1,5 @@
 (() => {
-  // =========================================================
-  // app.js (clean build)
-  // - Two-bucket affix math (MULT bucket + ADD bucket)
-  // - Size precision "Range Mode"
-  // - Whole-dollar display w/ commas
-  // - UPSERT on add (same name => update existing)
-  // =========================================================
-
+  const SHOW_TOPBAR = false; // ← set to false to hide the top bar
   const STORAGE_KEY = "item_helper_data_v10";
   const MAX_COMBOS_SAFE = 16384;
 
@@ -46,6 +39,11 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+
+  const topbar = document.querySelector(".topbar");
+  if (topbar && !SHOW_TOPBAR) {
+    topbar.style.display = "none";
+  }
 
   function safeNumber(s) {
     const n = Number(String(s).replace(/[^0-9.\-]/g, ""));
