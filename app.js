@@ -43,6 +43,7 @@
   const topbar = document.querySelector(".topbar");
   if (topbar && !SHOW_TOPBAR) {
     topbar.style.display = "none";
+    document.body.classList.add("no-topbar");
   }
 
   function safeNumber(s) {
@@ -81,6 +82,19 @@
         a.mult = KNOWN_MULTS[id];
       }
     }
+  }
+
+  // NEW: always pick the lowest-priced item (tie-break by name)
+  function getLowestPricedItemId(items) {
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return items
+      .slice()
+      .sort((a, b) => {
+        const av = (a?.baseValue ?? 0);
+        const bv = (b?.baseValue ?? 0);
+        if (av !== bv) return av - bv;
+        return String(a?.name ?? "").localeCompare(String(b?.name ?? ""), undefined, { sensitivity: "base" });
+      })[0].id ?? null;
   }
 
   // =========================================================
@@ -145,7 +159,10 @@
   // State
   // =========================================================
   let data = loadData();
-  let selectedItemId = data.items[0]?.id ?? null;
+
+  // CHANGED: don't auto-pick some default item; we'll choose lowest-priced on first render
+  let selectedItemId = null;
+
   let selectedAffixIds = new Set();
   let searchText = "";
 
@@ -347,8 +364,9 @@
     data = next;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
+    // CHANGED: if selected is missing, choose lowest-priced item (not items[0])
     if (!data.items.some(i => i.id === selectedItemId)) {
-      selectedItemId = data.items[0]?.id ?? null;
+      selectedItemId = getLowestPricedItemId(data.items);
       selectedAffixIds = new Set();
     }
 
@@ -369,14 +387,19 @@
       .sort(sortItemsByValueThenName)
       .filter(it => !searchText || it.name.toLowerCase().includes(searchText.toLowerCase()));
 
+    // CHANGED: only auto-select if nothing selected yet; pick lowest-priced in current list
+    if (!selectedItemId && items.length) {
+      selectedItemId = items[0].id;
+    }
+
     elItemList.innerHTML = "";
     for (const item of items) {
       const row = document.createElement("div");
       row.className = "itemRow" + (item.id === selectedItemId ? " is-active" : "");
       row.innerHTML = `
-        <div style="font-weight:900">${escapeHtml(item.name)}</div>
-        <div class="muted" style="font-size:12px; margin-top:4px;">${money(Math.floor(item.baseValue))}</div>
-      `;
+      <div style="font-weight:900">${escapeHtml(item.name)}</div>
+      <div class="muted" style="font-size:12px; margin-left:auto; text-align:right;">${money(Math.floor(item.baseValue))}</div>
+    `;
       row.addEventListener("click", () => {
         selectedItemId = item.id;
         selectedAffixIds = new Set();
@@ -747,7 +770,8 @@
     normalizeKnownAffixes(d);
     data = d;
 
-    selectedItemId = data.items[0]?.id ?? null;
+    // CHANGED: after reset, choose lowest-priced item
+    selectedItemId = getLowestPricedItemId(data.items);
     selectedAffixIds = new Set();
     sizeMult = 1;
     rangeMode = true;
