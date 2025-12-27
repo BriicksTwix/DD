@@ -249,6 +249,41 @@ window.DEFAULT_DATA = {
       "id": "bloomaw_s_eye",
       "name": "Bloomaw's Eye",
       "baseValue": 200
+    },
+    {
+      "id": "canned_pudding",
+      "name": "Canned Pudding",
+      "baseValue": 66
+    },
+    {
+      "id": "mre",
+      "name": "MRE",
+      "baseValue": 338
+    },
+    {
+      "id": "waflle",
+      "name": "Waflle",
+      "baseValue": 35
+    },
+    {
+      "id": "banana",
+      "name": "Banana",
+      "baseValue": 44
+    },
+    {
+      "id": "waffle",
+      "name": "Waffle",
+      "baseValue": 35
+    },
+    {
+      "id": "cherry",
+      "name": "Cherry",
+      "baseValue": 255
+    },
+    {
+      "id": "bloom_heart",
+      "name": "Bloom Heart",
+      "baseValue": 0
     }
   ],
   "affixes": [
