@@ -1,4 +1,4 @@
-window.DEFAULT_DATA = {
+{
   "items": [
     {
       "id": "tomato_soup",
@@ -284,6 +284,11 @@ window.DEFAULT_DATA = {
       "id": "bloom_heart",
       "name": "Bloom Heart",
       "baseValue": 0
+    },
+    {
+      "id": "test",
+      "name": "test",
+      "baseValue": 1
     }
   ],
   "affixes": [
