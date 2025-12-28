@@ -34,7 +34,6 @@
   background:#141414;
 }
 
-
 body{
   margin:0;
   background:var(--bg);
@@ -75,7 +74,7 @@ body{
 
 .tab.is-active{
   border-color:var(--accent);
-  background:rgba(192,24,59,.15);
+  background:rgba(192,24,59,15);
 }
 
 .layout{
@@ -119,7 +118,6 @@ body{
   padding: 12px;
 }
 
-
 .leftHeader{
   display:flex;
   justify-content:center;
@@ -141,7 +139,7 @@ body{
 
 .leftTab.is-active{
   border-color:var(--accent);
-  background:rgba(192,24,59,.15);
+  background:rgba(192,24,59,15);
 }
 
 .input{
@@ -173,12 +171,11 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  background:rgba(255,255,255,.02);
 }
 
 .itemRow.is-active{
-  border-color:rgba(65,211,138,.55);
-  background:rgba(65,211,138,.08);
+  border-color:rgba(65,211,138,55);
+  background: rgba(14,76,45,10);
 }
 
 .leftPage{
@@ -222,7 +219,6 @@ body{
 .box{
   border:1px solid var(--border);
   padding:12px;
-  background:rgba(255,255,255,.02);
 }
 
 .boxTitle{
@@ -241,7 +237,6 @@ body{
 .table th, .table td{
   text-align:left;
   padding:8px;
-  border-bottom:1px solid rgba(255,255,255,.06);
 }
 
 /* Combo Builder checklist (the checkbox labels inside #affixChecklist) */
@@ -262,15 +257,14 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
   padding:8px;
 }
 
 .comboSummary{
   margin-top:10px;
   padding-top:10px;
-  border-top:1px solid rgba(255,255,255,.06);
+  border-top:1px solid var(--border);
 }
 
 .comboSummary .line{
@@ -283,20 +277,19 @@ body{
 
 .btn{
   border:1px solid var(--border);
-  background:rgba(255,255,255,.02);
   color:var(--text);
   padding:10px 12px;
   cursor:pointer;
 }
 
 .btn.primary{
-  border-color: rgba(65,211,138,.35);
-  background: rgba(65,211,138,.10);
+  border-color: rgba(65,211,138,35);
+  background: rgba(65,211,138,10);
 }
 
 .btn.danger{
-  border-color: rgba(192,24,59,.45);
-  background: rgba(192,24,59,.10);
+  border-color: rgba(192,24,59,45);
+  background: rgba(192,24,59,10);
 }
 
 .hidden{ display:none; }
@@ -312,8 +305,8 @@ body{
 }
 
 .editorRow{
-  border:1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,08);
+  background: rgba(255,255,255,02);
   padding:10px;
   display:flex;
   justify-content:space-between;
@@ -372,7 +365,7 @@ body{
   background-image: linear-gradient(90deg, #2b183b 0%, #b58cff 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: 0 0 10px rgba(0,0,0,.75);
+  text-shadow: 0 0 10px rgba(0,0,0,75);
 }
 
 /* Golden */
@@ -381,7 +374,7 @@ body{
   background-image: linear-gradient(90deg, #966600 0%, #fcc500 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: 0 0 12px rgba(255,215,0,.10);
+  text-shadow: 0 0 12px rgba(255,215,0,0);
 }
 
 /* Rainbow per-letter colors (spans generated in JS) */
@@ -390,3 +383,87 @@ body{
   letter-spacing: .2px;
 }
 
+/* ===================================================================== */
+/* ================== MOBILE HAMBURGER / DRAWER ADDON =================== */
+/* (Adds new names only; does not change any existing names app.js uses)  */
+/* ===================================================================== */
+
+.topLeft{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* Hidden by default (desktop). Appears on mobile. */
+.hamburger{
+  display:none;
+  border:1px solid var(--border);
+  background:rgba(10,10,10,02);
+  color:var(--text);
+  padding:8px 10px;
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+}
+
+.navOverlay{
+  display:none;
+}
+
+@media (max-width:700px){
+  .hamburger{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Turn your EXISTING left panel into a slide-out drawer */
+  .panel.left{
+    position:fixed;
+    top:56px;      /* matches .topbar height */
+    left:0;
+    bottom:0;
+    width:min(88vw, 340px);
+    max-width:340px;
+    z-index:50;
+
+    transform:translateX(-105%);
+    transition:transform .18s ease;
+
+    border-right:1px solid var(--border);
+    background:var(--panel);
+
+    overflow:hidden;
+  }
+
+  html.nav-open .panel.left{
+    transform:translateX(0);
+  }
+
+  /* Overlay behind drawer */
+  .navOverlay.is-active{
+    display:block;
+    position:fixed;
+    top:56px;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:40;
+    background:rgba(0,0,0,.55);
+  }
+
+  /* Prevent background scrolling when drawer open */
+  html.nav-open body{
+    overflow:hidden;
+  }
+
+  /* Smooth sidebar scroll on phones */
+  .itemList{
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* iOS: prevent zoom on focus */
+  .input{
+    font-size:16px;
+  }
+}
