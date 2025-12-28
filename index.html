@@ -9,7 +9,11 @@
 <body>
   <div id="app">
     <header class="topbar">
-      <h1 class="logo">Deadly Delivery – Item Value Calculator</h1>
+      <!-- ADDED: wrapper + hamburger (does not rename/remove anything) -->
+      <div class="topLeft">
+        <button id="navToggle" class="hamburger" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+        <h1 class="logo">Deadly Delivery – Item Value Calculator</h1>
+      </div>
 
       <!-- Right-side buttons (toggleable in app.js) -->
       <nav class="tabs" id="rightTabs">
@@ -17,6 +21,9 @@
         <button class="tab" data-tab="edit">Editor</button>
       </nav>
     </header>
+
+    <!-- ADDED: overlay for mobile drawer -->
+    <div id="navOverlay" class="navOverlay" aria-hidden="true"></div>
 
     <main class="layout">
       <!-- LEFT -->
@@ -31,14 +38,18 @@
         <!-- Food page (current behavior) -->
         <div id="leftFood" class="leftPage is-active">
           <div class="panelHeader">
-            <input id="itemSearch" class="input" placeholder="Search..." />
+            <input id="itemSearch" class="input" placeholder="Search." />
           </div>
           <div id="itemList" class="itemList"></div>
         </div>
 
         <!-- Dish page (WIP) -->
         <div id="leftDish" class="leftPage">
-          <div class="leftComingSoon">Coming soon. <br /><br />I'm not really sure how to go about this, I don't cook much. <br /><br />If you can help at all my discord is briicks, display is Bone.</div>
+          <div class="leftComingSoon">
+            Coming soon. <br /><br />
+            I'm not really sure how to go about this, I don't cook much. <br /><br />
+            If you can help at all my discord is briicks, display is Bone.
+          </div>
         </div>
       </section>
 
@@ -124,5 +135,48 @@
 
   <script src="data.defaults.js"></script>
   <script src="app.js"></script>
+
+  <!-- ADDED: mobile drawer toggle. Does not touch/rename anything app.js uses. -->
+  <script>
+  (() => {
+    const btn = document.getElementById("navToggle");
+    const overlay = document.getElementById("navOverlay");
+    const root = document.documentElement;
+
+    if (!btn || !overlay) return;
+
+    const mq = window.matchMedia("(max-width: 700px)");
+    const isMobile = () => mq.matches;
+
+    const setOpen = (open) => {
+      if (!isMobile()) open = false;
+      root.classList.toggle("nav-open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      overlay.classList.toggle("is-active", open);
+      overlay.setAttribute("aria-hidden", open ? "false" : "true");
+    };
+
+    btn.addEventListener("click", () => {
+      setOpen(!root.classList.contains("nav-open"));
+    });
+
+    overlay.addEventListener("click", () => setOpen(false));
+
+    // Close drawer after selecting something in the sidebar (items or Food/Dish)
+    document.addEventListener("click", (e) => {
+      if (!root.classList.contains("nav-open")) return;
+      const left = document.querySelector(".panel.left");
+      if (!left || !left.contains(e.target)) return;
+
+      if (e.target.closest(".itemRow") || e.target.closest(".leftTab")) {
+        setOpen(false);
+      }
+    }, true);
+
+    // Leaving mobile width => close
+    const onChange = () => setOpen(false);
+    mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
+  })();
+  </script>
 </body>
 </html>
