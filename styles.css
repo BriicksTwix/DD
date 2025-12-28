@@ -7,7 +7,33 @@
   --accent:#c0183b;
 }
 
-*{ box-sizing:border-box; }
+*{
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a3a #141414;
+  box-sizing:border-box;
+}
+
+*::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+*::-webkit-scrollbar-track{
+  background:#141414;     /* solid background */
+}
+
+*::-webkit-scrollbar-thumb{
+  background:#3a3a3a;     /* solid thumb */
+}
+
+*::-webkit-scrollbar-thumb:hover{
+  background:#4a4a4a;
+}
+
+*::-webkit-scrollbar-corner{
+  background:#141414;
+}
+
 
 body{
   margin:0;
