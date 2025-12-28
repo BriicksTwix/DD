@@ -3,18 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Item Value Helper</title>
+  <title>Deadly Delivery – Item Value Calculator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
+  <div id="app">
     <header class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <div class="title">Item Value Helper</div>
-      </div>
+      <h1 class="logo">Deadly Delivery – Item Value Calculator</h1>
 
-      <nav class="tabs">
+      <!-- Right-side buttons (toggleable in app.js) -->
+      <nav class="tabs" id="rightTabs">
         <button class="tab is-active" data-tab="browse">Browse</button>
         <button class="tab" data-tab="edit">Editor</button>
       </nav>
@@ -23,10 +21,25 @@
     <main class="layout">
       <!-- LEFT -->
       <section class="panel left">
-        <div class="panelHeader">
-          <input id="itemSearch" class="input" placeholder="Search..." />
+        <div class="panelHeader leftHeader">
+          <div class="leftTabs">
+            <button class="leftTab is-active" data-leftpage="food">Food</button>
+            <button class="leftTab" data-leftpage="dish">Dish</button>
+          </div>
         </div>
-        <div id="itemList" class="itemList"></div>
+
+        <!-- Food page (current behavior) -->
+        <div id="leftFood" class="leftPage is-active">
+          <div class="panelHeader">
+            <input id="itemSearch" class="input" placeholder="Search..." />
+          </div>
+          <div id="itemList" class="itemList"></div>
+        </div>
+
+        <!-- Dish page (WIP) -->
+        <div id="leftDish" class="leftPage">
+          <div class="leftComingSoon">Coming soon. <br /><br />I'm not really sure how to go about this, I don't cook much. <br /><br />If you can help at all my discord is briicks, display is Bone.</div>
+        </div>
       </section>
 
       <!-- RIGHT -->
@@ -34,20 +47,23 @@
         <!-- Browse -->
         <div id="viewBrowse" class="view is-active">
           <div class="panelHeader">
-            <div>
-              <div id="selectedItemName" class="panelTitle">Select an item</div>
-              <div id="selectedItemValue" class="muted"></div>
+            <div class="rightHeaderLine">
+              <div>
+                <div id="selectedItemName" class="panelTitle">Select an item</div>
+                <div id="selectedItemValue" class="muted"></div>
+              </div>
+              <!-- Size + Range controls are injected here by app.js -->
             </div>
           </div>
 
-          <div class="grid2">
-            <div class="card">
-              <div class="cardTitle">Affix Values</div>
+          <div class="rightGrid">
+            <div class="box">
+              <div class="boxTitle">Affix Values</div>
               <div id="affixPriceTable" class="tableWrap"></div>
             </div>
 
-            <div class="card">
-              <div class="cardTitle">Combo Builder</div>
+            <div class="box">
+              <div class="boxTitle">Combo Builder</div>
               <div id="affixChecklist" class="checklist"></div>
 
               <div class="comboSummary">
@@ -63,8 +79,8 @@
             </div>
           </div>
 
-          <div class="card">
-            <div class="cardTitle">All Combos</div>
+          <div class="box">
+            <div class="boxTitle">All Combos</div>
             <div id="comboTable" class="tableWrap"></div>
           </div>
         </div>
@@ -72,25 +88,27 @@
         <!-- Editor -->
         <div id="viewEdit" class="view">
           <div class="panelHeader">
-            <div class="panelTitle">Editor</div>
-            <div class="row">
-              <button id="btnResetDefaults" class="btn danger">Reset</button>
-              <button id="btnExport" class="btn">Export</button>
-              <button id="btnImport" class="btn">Import</button>
+            <div class="editorHeaderRow">
+              <div class="panelTitle">Editor</div>
+              <div class="row">
+                <button id="btnResetDefaults" class="btn danger">Reset</button>
+                <button id="btnExport" class="btn">Export</button>
+                <button id="btnImport" class="btn">Import</button>
+              </div>
             </div>
           </div>
 
-          <div class="grid2">
-            <div class="card">
-              <div class="cardTitle">Items</div>
+          <div class="rightGrid">
+            <div class="box">
+              <div class="boxTitle">Items</div>
               <input id="newItemName" class="input" placeholder="Name" />
               <input id="newItemValue" class="input" placeholder="Base Value" inputmode="decimal" />
               <button id="btnAddItem" class="btn primary">Add Item</button>
               <div id="editorItems" class="editorList"></div>
             </div>
 
-            <div class="card">
-              <div class="cardTitle">Affixes</div>
+            <div class="box">
+              <div class="boxTitle">Affixes</div>
               <input id="newAffixName" class="input" placeholder="Name" />
               <input id="newAffixMult" class="input" placeholder="Multiplier" inputmode="decimal" />
               <button id="btnAddAffix" class="btn primary">Add Affix</button>
