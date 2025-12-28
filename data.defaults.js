@@ -1,5 +1,5 @@
-{
-  "items": [
+window.DEFAULT_DATA = {
+  items: [
     {
       "id": "tomato_soup",
       "name": "Tomato Soup",
@@ -286,7 +286,7 @@
       "baseValue": 0
     }
   ],
-  "affixes": [
+  affixes: [
     {
       "id": "celebratory",
       "name": "Celebratory",
