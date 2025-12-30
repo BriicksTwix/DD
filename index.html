@@ -9,24 +9,20 @@
 <body>
   <div id="app">
     <header class="topbar">
-      <!-- ADDED: wrapper + hamburger (does not rename/remove anything) -->
       <div class="topLeft">
         <button id="navToggle" class="hamburger" type="button" aria-label="Menu" aria-expanded="false">☰</button>
         <h1 class="logo">Deadly Delivery – Item Value Calculator</h1>
       </div>
 
-      <!-- Right-side buttons (toggleable in app.js) -->
       <nav class="tabs" id="rightTabs">
         <button class="tab is-active" data-tab="browse">Browse</button>
         <button class="tab" data-tab="edit">Editor</button>
       </nav>
     </header>
 
-    <!-- ADDED: overlay for mobile drawer -->
     <div id="navOverlay" class="navOverlay" aria-hidden="true"></div>
 
     <main class="layout">
-      <!-- LEFT -->
       <section class="panel left">
         <div class="panelHeader leftHeader">
           <div class="leftTabs">
@@ -35,7 +31,6 @@
           </div>
         </div>
 
-        <!-- Food page (current behavior) -->
         <div id="leftFood" class="leftPage is-active">
           <div class="panelHeader">
             <input id="itemSearch" class="input" placeholder="Search." />
@@ -43,7 +38,6 @@
           <div id="itemList" class="itemList"></div>
         </div>
 
-        <!-- Dish page (WIP) -->
         <div id="leftDish" class="leftPage">
           <div class="leftComingSoon">
             Coming soon. <br /><br />
@@ -53,9 +47,7 @@
         </div>
       </section>
 
-      <!-- RIGHT -->
       <section class="panel right">
-        <!-- Browse -->
         <div id="viewBrowse" class="view is-active">
           <div class="panelHeader">
             <div class="rightHeaderLine">
@@ -63,7 +55,6 @@
                 <div id="selectedItemName" class="panelTitle">Select an item</div>
                 <div id="selectedItemValue" class="muted"></div>
               </div>
-              <!-- Size + Range controls are injected here by app.js -->
             </div>
           </div>
 
@@ -96,7 +87,6 @@
           </div>
         </div>
 
-        <!-- Editor -->
         <div id="viewEdit" class="view">
           <div class="panelHeader">
             <div class="editorHeaderRow">
@@ -136,7 +126,6 @@
   <script src="data.defaults.js"></script>
   <script src="app.js"></script>
 
-  <!-- ADDED: mobile drawer toggle. Does not touch/rename anything app.js uses. -->
   <script>
   (() => {
     const btn = document.getElementById("navToggle");
@@ -162,7 +151,6 @@
 
     overlay.addEventListener("click", () => setOpen(false));
 
-    // Close drawer after selecting something in the sidebar (items or Food/Dish)
     document.addEventListener("click", (e) => {
       if (!root.classList.contains("nav-open")) return;
       const left = document.querySelector(".panel.left");
@@ -172,8 +160,6 @@
         setOpen(false);
       }
     }, true);
-
-    // Leaving mobile width => close
     const onChange = () => setOpen(false);
     mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
   })();
