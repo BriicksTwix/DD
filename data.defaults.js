@@ -283,7 +283,7 @@ window.DEFAULT_DATA = {
     {
       "id": "bloom_heart",
       "name": "Bloom Heart",
-      "baseValue": 0
+      "baseValue": 20000
     }
   ],
   affixes: [
