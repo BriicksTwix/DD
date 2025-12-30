@@ -1,15 +1,11 @@
 (() => {
-  // Toggle ONLY the Browse/Editor buttons in the top bar
-  const SHOW_RIGHT_TABS = false; // set false for public read-only mode
+  const SHOW_RIGHT_TABS = false;
   const READ_ONLY_MODE = !SHOW_RIGHT_TABS;
 
   const STORAGE_KEY = "item_helper_data_v10";
   const MAX_COMBOS_SAFE = 16384;
-
-  // If game shows size with 2 decimals (rounded), assume true ∈ [s-0.005, s+0.005]
   const SIZE_HALF_STEP = 0.005;
 
-  // ---- Known multipliers (stabilize) ----
   const KNOWN_MULTS = {
     celebratory: 3,
     shadowed: 4,
@@ -22,10 +18,8 @@
     rotten: 0.5
   };
 
-  // MULT bucket: multiply together
   const MULT_BUCKET = new Set(["celebratory", "rainbow", "imaginary"]);
 
-  // ---- Money formatter ----
   const moneyFmt = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -42,7 +36,6 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-  // Hide only the Browse/Editor buttons (topbar stays visible)
   const topTabs = document.querySelector(".topbar .tabs");
   if (topTabs && !SHOW_RIGHT_TABS) topTabs.style.display = "none";
 
@@ -66,9 +59,11 @@
     );
   }
 
-  function clampPositive(v, fallback = 1) {
-    if (!Number.isFinite(v) || v <= 0) return fallback;
-    return v;
+  // If you truly want NO clamp, change to:
+  // return Number.isFinite(v) ? v : fallback;
+  function clampSize(v, fallback = 1) {
+    if (!Number.isFinite(v)) return fallback;
+    return Math.min(4, Math.max(0, v));
   }
 
   function normalizeKnownAffixes(state) {
@@ -98,9 +93,6 @@
     );
   }
 
-  // =========================================================
-  // Storage
-  // =========================================================
   function loadData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -128,7 +120,6 @@
     normalizeKnownAffixes(next);
     data = next;
 
-    // In read-only mode: DO NOT persist (but keep UI working in-memory)
     if (!READ_ONLY_MODE) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -146,9 +137,6 @@
     renderAll();
   }
 
-  // =========================================================
-  // DOM refs
-  // =========================================================
   const elItemSearch = document.getElementById("itemSearch");
   const elItemList = document.getElementById("itemList");
 
@@ -181,9 +169,6 @@
   const btnAddItem = document.getElementById("btnAddItem");
   const btnAddAffix = document.getElementById("btnAddAffix");
 
-  // =========================================================
-  // Left tabs (Food/Dish)
-  // =========================================================
   const leftTabs = Array.from(document.querySelectorAll(".leftTab"));
   const leftFood = document.getElementById("leftFood");
   const leftDish = document.getElementById("leftDish");
@@ -199,13 +184,9 @@
     btn.addEventListener("click", () => setLeftPage(btn.dataset.leftpage));
   });
 
-  // Start on whatever is active in HTML (defaults to Food)
   const initialLeft = leftTabs.find((b) => b.classList.contains("is-active"))?.dataset.leftpage || "food";
   setLeftPage(initialLeft);
 
-  // =========================================================
-  // State
-  // =========================================================
   let data = loadData();
   let selectedItemId = null;
   let selectedAffixIds = new Set();
@@ -213,11 +194,17 @@
   let sizeMult = 1;
   let rangeMode = true;
 
-  // =========================================================
-  // Tabs (Browse/Editor)
-  // =========================================================
+  // Prevent freezing: throttle renders with RAF
+  let _renderRaf = 0;
+  function scheduleRenderAll() {
+    if (_renderRaf) return;
+    _renderRaf = requestAnimationFrame(() => {
+      _renderRaf = 0;
+      renderAll();
+    });
+  }
+
   function setTab(name) {
-    // If buttons are hidden, force browse so users can't get stuck on edit
     if (!SHOW_RIGHT_TABS) name = "browse";
 
     for (const t of tabs) t.classList.toggle("is-active", t.dataset.tab === name);
@@ -226,9 +213,6 @@
   }
   tabs.forEach((btn) => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
 
-  // =========================================================
-  // Sorting
-  // =========================================================
   function sortItemsByValueThenName(a, b) {
     const dv = (a.baseValue ?? 0) - (b.baseValue ?? 0);
     if (dv !== 0) return dv;
@@ -245,9 +229,6 @@
     return String(a.name).localeCompare(String(b.name), undefined, { sensitivity: "base" });
   }
 
-  // =========================================================
-  // Affix display helpers (keeps your colored affixes)
-  // =========================================================
   const RAINBOW = ["#ff3b3b", "#ffa53b", "#fff13b", "#3bff6d", "#3bd7ff", "#4d3bff", "#d83bff"];
 
   function renderRainbowLetters(text) {
@@ -271,7 +252,6 @@
     return `<span class="affixText" data-affix="${escapeHtml(a.id)}">${escapeHtml(a.name)}</span>`;
   }
 
-  // Imaginary excluded from All Combos
   function getComboAffixesForAllCombos() {
     return data.affixes.slice().filter((a) => String(a.id).toLowerCase() !== "imaginary").sort(sortByName);
   }
@@ -296,22 +276,28 @@
 
   function priceExact(baseValue, size, affixes) {
     const b = Number.isFinite(baseValue) ? baseValue : 0;
-    const s = clampPositive(size, 1);
+    const s = clampSize(size, 1);
     const eff = effectiveMultiplier(affixes);
     return Math.floor(b * s * eff);
   }
 
   function priceRange(baseValue, sizeShown, affixes) {
-    const s = clampPositive(sizeShown, 1);
+    const s = clampSize(sizeShown, 1);
     const sLow = Math.max(0, s - SIZE_HALF_STEP);
     const sHigh = s + SIZE_HALF_STEP;
 
     return { min: priceExact(baseValue, sLow, affixes), max: priceExact(baseValue, sHigh, affixes) };
   }
 
-  // =========================================================
-  // Size + Range controls
-  // =========================================================
+  // Keep digits + ONE dot, nothing else. Do NOT remove a trailing dot.
+  function normalizeTyping(raw) {
+    raw = String(raw ?? "").replace(",", ".");
+    raw = raw.replace(/[^0-9.]/g, "");
+    const parts = raw.split(".");
+    if (parts.length <= 2) return raw;
+    return parts[0] + "." + parts.slice(1).join("");
+  }
+
   function ensureTopControls() {
     let sizeInput = document.getElementById("sizeMult");
 
@@ -331,7 +317,13 @@
       sizeInput = document.createElement("input");
       sizeInput.id = "sizeMult";
       sizeInput.className = "input";
+
+      // CRITICAL: text input so '.' cannot be blocked by browser/locale
+      sizeInput.type = "text";
       sizeInput.setAttribute("inputmode", "decimal");
+      sizeInput.setAttribute("autocomplete", "off");
+      sizeInput.setAttribute("spellcheck", "false");
+
       sizeInput.value = "1";
       sizeInput.style.width = "120px";
       sizeInput.style.padding = "8px 10px";
@@ -363,11 +355,24 @@
       elSelectedItemValue.insertAdjacentElement("afterend", wrap);
     }
 
+    // If input exists in HTML, force it to text so '.' is allowed.
+    if (sizeInput) {
+      sizeInput.type = "text";
+      sizeInput.setAttribute("inputmode", "decimal");
+      sizeInput.setAttribute("autocomplete", "off");
+      sizeInput.setAttribute("spellcheck", "false");
+    }
+
+    // IMPORTANT: do NOT overwrite the user's typing while focused
+    const isEditingSize = sizeInput && document.activeElement === sizeInput;
+
     const storedSize = localStorage.getItem("size_mult_v1");
-    if (storedSize) {
-      const n = safeNumber(storedSize);
-      sizeMult = clampPositive(n, 1);
-      if (sizeInput) sizeInput.value = String(sizeMult);
+    if (storedSize != null) {
+      const n = safeNumber(String(storedSize).replace(",", "."));
+      sizeMult = clampSize(n, 1);
+      if (sizeInput && !isEditingSize) sizeInput.value = String(sizeMult);
+    } else {
+      if (sizeInput && !isEditingSize) sizeInput.value = String(sizeMult);
     }
 
     const storedRange = localStorage.getItem("range_mode_v1");
@@ -377,35 +382,71 @@
       if (cb) cb.checked = rangeMode;
     }
 
-    if (sizeInput) {
-      sizeInput.addEventListener("input", () => {
-        const n = safeNumber(sizeInput.value);
-        sizeMult = Number.isFinite(n) && n > 0 ? n : 1;
+    // Bind ONCE
+    if (sizeInput && !sizeInput.dataset.bound) {
+      sizeInput.dataset.bound = "1";
+
+      let t = 0;
+
+      const applyFromField = () => {
+        const normalized = normalizeTyping(sizeInput.value);
+
+        // Keep normalization, but keep trailing dot
+        if (normalized !== sizeInput.value) sizeInput.value = normalized;
+
+        // Allow typing states: "", ".", "3."
+        if (normalized === "" || normalized === "." || normalized.endsWith(".")) return;
+
+        const n = Number(normalized);
+        if (!Number.isFinite(n)) return;
+
+        sizeMult = clampSize(n, 1);
         localStorage.setItem("size_mult_v1", String(sizeMult));
-        renderAll();
+        scheduleRenderAll();
+      };
+
+      sizeInput.addEventListener("input", () => {
+        const normalized = normalizeTyping(sizeInput.value);
+        if (normalized !== sizeInput.value) sizeInput.value = normalized;
+
+        clearTimeout(t);
+        t = setTimeout(applyFromField, 120);
       });
 
       sizeInput.addEventListener("blur", () => {
-        sizeMult = clampPositive(safeNumber(sizeInput.value), 1);
-        sizeInput.value = String(sizeMult);
-        localStorage.setItem("size_mult_v1", String(sizeMult));
-        renderAll();
+        clearTimeout(t);
+
+        // On blur, if user left "3." finalize it as 3 (or keep as is if you want)
+        let normalized = normalizeTyping(sizeInput.value);
+        if (normalized === "" || normalized === ".") {
+          sizeInput.value = String(sizeMult);
+          return;
+        }
+        if (normalized.endsWith(".")) normalized = normalized.slice(0, -1);
+
+        const n = Number(normalized);
+        if (Number.isFinite(n)) {
+          sizeMult = clampSize(n, 1);
+          localStorage.setItem("size_mult_v1", String(sizeMult));
+          sizeInput.value = String(sizeMult);
+          scheduleRenderAll();
+        } else {
+          sizeInput.value = String(sizeMult);
+        }
       });
     }
 
     const rangeCb = document.getElementById("rangeMode");
-    if (rangeCb) {
+    if (rangeCb && !rangeCb.dataset.bound) {
+      rangeCb.dataset.bound = "1";
       rangeCb.addEventListener("change", () => {
         rangeMode = !!rangeCb.checked;
         localStorage.setItem("range_mode_v1", rangeMode ? "1" : "0");
-        renderAll();
+        scheduleRenderAll();
       });
     }
   }
 
-  // =========================================================
-  // Render pieces
-  // =========================================================
   function renderItems() {
     const items = data.items
       .slice()
@@ -446,7 +487,7 @@
     let minV = Infinity;
     let maxV = -Infinity;
 
-    const s = clampPositive(sizeMult, 1);
+    const s = clampSize(sizeMult, 1);
     const sLow = rangeMode ? Math.max(0, s - SIZE_HALF_STEP) : s;
     const sHigh = rangeMode ? s + SIZE_HALF_STEP : s;
 
@@ -636,11 +677,7 @@
     elComboTable.appendChild(table);
   }
 
-  // =========================================================
-  // Editor
-  // =========================================================
   function renderEditor() {
-    // Keep editor visible, but prevent saved changes in read-only mode
     const lock = READ_ONLY_MODE;
 
     let banner = document.getElementById("readOnlyBanner");
@@ -658,7 +695,6 @@
     banner.textContent = lock ? "Read-only mode: editing is disabled for this build." : "";
     banner.style.display = lock ? "block" : "none";
 
-    // Disable top-level editor buttons (editor still renders)
     [btnAddItem, btnAddAffix, elBtnResetDefaults, elBtnExport, elBtnImport].forEach((b) => {
       if (!b) return;
       b.disabled = lock;
@@ -666,7 +702,6 @@
       b.style.cursor = lock ? "not-allowed" : "pointer";
     });
 
-    // Render items list
     const items = data.items.slice().sort(sortItemsByValueThenName);
     elEditorItems.innerHTML = "";
 
@@ -689,7 +724,6 @@
       elEditorItems.appendChild(row);
     }
 
-    // Render affixes list
     const affixes = data.affixes.slice().sort(sortAffixByMultDescThenName);
     elEditorAffixes.innerHTML = "";
 
@@ -713,15 +747,11 @@
     }
   }
 
-  // =========================================================
-  // Events
-  // =========================================================
   elItemSearch.addEventListener("input", () => {
     searchText = elItemSearch.value || "";
     renderItems();
   });
 
-  // ---- UPSERT: Add Item ----
   document.getElementById("btnAddItem").addEventListener("click", () => {
     if (READ_ONLY_MODE) return alert("Read-only mode: editing is disabled.");
     const nameRaw = (elNewItemName.value || "").trim();
@@ -733,16 +763,13 @@
 
     const next = deepCopy(data);
 
-    // Find existing by name (case-insensitive)
     const existing = next.items.find((i) => normName(i.name) === nameKey);
 
     if (existing) {
-      // Update existing
       existing.name = nameRaw;
       existing.baseValue = Math.round(val * 100) / 100;
       selectedItemId = existing.id;
     } else {
-      // Create new
       const taken = new Set(next.items.map((i) => i.id));
       let id = slugify(nameRaw);
       let n = 2;
@@ -759,7 +786,6 @@
     saveData(next);
   });
 
-  // ---- UPSERT: Add Affix ----
   document.getElementById("btnAddAffix").addEventListener("click", () => {
     if (READ_ONLY_MODE) return alert("Read-only mode: editing is disabled.");
     const nameRaw = (elNewAffixName.value || "").trim();
@@ -791,7 +817,6 @@
     saveData(next);
   });
 
-  // ---- Reset Defaults ----
   document.getElementById("btnResetDefaults").addEventListener("click", () => {
     if (READ_ONLY_MODE) return alert("Read-only mode: editing is disabled.");
     if (!confirm("Reset everything to defaults?")) return;
@@ -800,7 +825,6 @@
     saveData(d);
   });
 
-  // ---- Export ----
   document.getElementById("btnExport").addEventListener("click", () => {
     if (READ_ONLY_MODE) return alert("Read-only mode: editing is disabled.");
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -814,7 +838,6 @@
     URL.revokeObjectURL(url);
   });
 
-  // ---- Import ----
   document.getElementById("btnImport").addEventListener("click", () => {
     if (READ_ONLY_MODE) return alert("Read-only mode: editing is disabled.");
     elFileImport.click();
@@ -848,9 +871,6 @@
     }
   });
 
-  // =========================================================
-  // Main render
-  // =========================================================
   function renderAll() {
     ensureTopControls();
     renderItems();
@@ -861,18 +881,10 @@
     renderAffixPriceTable(item);
     renderAffixChecklist(item);
     renderAllCombos(item);
-
-    // Editor always renders its content; view toggles control visibility
     renderEditor();
   }
 
-  // =========================================================
-  // Init
-  // =========================================================
   if (!selectedItemId) selectedItemId = getLowestPricedItemId(data.items);
-
-  // Start in browse if tabs are hidden; otherwise keep normal default (browse active in HTML)
   setTab("browse");
-
   renderAll();
 })();
