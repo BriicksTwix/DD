@@ -19,11 +19,11 @@
 }
 
 *::-webkit-scrollbar-track{
-  background:#141414;     /* solid background */
+  background:#141414;
 }
 
 *::-webkit-scrollbar-thumb{
-  background:#3a3a3a;     /* solid thumb */
+  background:#3a3a3a;
 }
 
 *::-webkit-scrollbar-thumb:hover{
@@ -110,7 +110,6 @@ body{
   font-size:18px;
 }
 
-/* SHARED PANEL STYLE */
 .panelBox{
   background: var(--panel);
   border: 1px solid var(--border);
@@ -163,7 +162,6 @@ body{
   gap:10px;
 }
 
-/* keep size of item rows (no “stretch to fill”) */
 .itemRow{
   border:1px solid var(--border);
   padding:10px;
@@ -202,7 +200,6 @@ body{
   display:block;
 }
 
-/* RIGHT SIDE CONTENT LAYOUT */
 .rightGrid{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -239,14 +236,9 @@ body{
   padding:8px;
 }
 
-/* Combo Builder checklist (the checkbox labels inside #affixChecklist) */
 .checklist{
   display:grid;
-
-  /* 2 columns when the checklist can fit them, otherwise it collapses to 1.
-     181*2 + 8px gap = 370px threshold */
   grid-template-columns: repeat(auto-fit, minmax(181px, 1fr));
-
   gap:8px;
   max-height:260px;
   overflow:auto;
@@ -306,7 +298,6 @@ body{
 
 .editorRow{
   border:1px solid rgba(255,255,255,08);
-  background: rgba(255,255,255,02);
   padding:10px;
   display:flex;
   justify-content:space-between;
@@ -345,13 +336,11 @@ body{
   flex-wrap:wrap;
 }
 
-/* ========= AFFIX TEXT (KEEP COLORS) ========= */
 .affixText{
   font-weight: 900;
   letter-spacing: .2px;
 }
 
-/* Plain solid colors */
 .affixText[data-affix="celebratory"]{ color:#2ECC40; }
 .affixText[data-affix="electric"]{ color:#FFE766; }
 .affixText[data-affix="heated"]{ color:#FF7F50; }
@@ -359,7 +348,6 @@ body{
 .affixText[data-affix="imaginary"]{ color:#C6C6F8; }
 .affixText[data-affix="rotten"]{ color:#688A22; }
 
-/* Shadowed */
 .affixText[data-affix="shadowed"]{
   color: transparent;
   background-image: linear-gradient(90deg, #2b183b 0%, #b58cff 100%);
@@ -368,7 +356,6 @@ body{
   text-shadow: 0 0 10px rgba(0,0,0,75);
 }
 
-/* Golden */
 .affixText[data-affix="golden"]{
   color: transparent;
   background-image: linear-gradient(90deg, #966600 0%, #fcc500 100%);
@@ -377,16 +364,10 @@ body{
   text-shadow: 0 0 12px rgba(255,215,0,0);
 }
 
-/* Rainbow per-letter colors (spans generated in JS) */
 .rainbowLetter{
   font-weight: 900;
   letter-spacing: .2px;
 }
-
-/* ===================================================================== */
-/* ================== MOBILE HAMBURGER / DRAWER ADDON =================== */
-/* (Adds new names only; does not change any existing names app.js uses)  */
-/* ===================================================================== */
 
 .topLeft{
   display:flex;
@@ -394,7 +375,6 @@ body{
   gap:10px;
 }
 
-/* Hidden by default (desktop). Appears on mobile. */
 .hamburger{
   display:none;
   border:1px solid var(--border);
@@ -417,10 +397,9 @@ body{
     justify-content:center;
   }
 
-  /* Turn your EXISTING left panel into a slide-out drawer */
   .panel.left{
     position:fixed;
-    top:56px;      /* matches .topbar height */
+    top:56px;
     left:0;
     bottom:0;
     width:min(88vw, 340px);
@@ -440,7 +419,6 @@ body{
     transform:translateX(0);
   }
 
-  /* Overlay behind drawer */
   .navOverlay.is-active{
     display:block;
     position:fixed;
@@ -452,17 +430,14 @@ body{
     background:rgba(0,0,0,.55);
   }
 
-  /* Prevent background scrolling when drawer open */
   html.nav-open body{
     overflow:hidden;
   }
 
-  /* Smooth sidebar scroll on phones */
   .itemList{
     -webkit-overflow-scrolling:touch;
   }
 
-  /* iOS: prevent zoom on focus */
   .input{
     font-size:16px;
   }
