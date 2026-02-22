@@ -3,17 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deadly Delivery – Item Value Calculator</title>
+  <title>☠ DEADLY DELIVERY — Item Value Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <div class="grain-overlay"></div>
+  <div class="top-accent-bar"></div>
+
   <div id="app">
+
+    <!-- ══ HEADER ══ -->
     <header class="topbar">
       <div class="topLeft">
         <button id="navToggle" class="hamburger" type="button" aria-label="Menu" aria-expanded="false">☰</button>
-        <h1 class="logo">Deadly Delivery – Item Value Calculator</h1>
+        <h1 class="logo">
+          <span class="logo-skull">☠</span>
+          <span class="logo-dead">DEADLY</span>
+          <span class="logo-space"> </span>
+          <span class="logo-delivery">DELIVERY</span>
+          <span class="logo-divider">|</span>
+          <span class="logo-sub">Item Value Calculator</span>
+        </h1>
       </div>
-
       <nav class="tabs" id="rightTabs">
         <button class="tab is-active" data-tab="browse">Browse</button>
         <button class="tab" data-tab="edit">Editor</button>
@@ -23,147 +38,294 @@
     <div id="navOverlay" class="navOverlay" aria-hidden="true"></div>
 
     <main class="layout">
+
+      <!-- ══ LEFT PANEL ══ -->
       <section class="panel left">
+
+        <div class="menu-board-header">
+          <div class="menu-board-stripes"></div>
+          <div class="menu-board-label">☰ ORDER MENU ☰</div>
+        </div>
+
         <div class="panelHeader leftHeader">
           <div class="leftTabs">
-            <button class="leftTab is-active" data-leftpage="food">Food</button>
-            <button class="leftTab" data-leftpage="dish">Dish</button>
+            <button class="leftTab is-active" data-leftpage="food">
+              <span class="ltab-emoji">🍖</span>
+              <span class="ltab-name">Food</span>
+            </button>
+            <button class="leftTab" data-leftpage="dish">
+              <span class="ltab-emoji">🍽</span>
+              <span class="ltab-name">Dish</span>
+            </button>
+            <button class="leftTab" data-leftpage="tools">
+              <span class="ltab-emoji">🔧</span>
+              <span class="ltab-name">Tools</span>
+            </button>
+            <button class="leftTab" data-leftpage="entity">
+              <span class="ltab-emoji">👁</span>
+              <span class="ltab-name">Entity</span>
+            </button>
           </div>
         </div>
 
         <div id="leftFood" class="leftPage is-active">
-          <div class="panelHeader">
-            <input id="itemSearch" class="input" placeholder="Search." />
-          </div>
+          <div class="searchBar"><div class="searchWrap"><span class="searchIcon">⌕</span><input id="itemSearch" class="input searchInput" placeholder="Search food…" /></div></div>
           <div id="itemList" class="itemList"></div>
         </div>
-
         <div id="leftDish" class="leftPage">
-          <div class="leftComingSoon">
-            I'm not really sure how to go about this, I don't cook much. <br /><br />
-            If you can help at all my discord is briicks.
-          </div>
+          <div class="searchBar"><div class="searchWrap"><span class="searchIcon">⌕</span><input id="dishSearch" class="input searchInput" placeholder="Search dishes…" /></div></div>
+          <div id="dishList" class="itemList"></div>
         </div>
+        <div id="leftTools" class="leftPage">
+          <div class="searchBar"><div class="searchWrap"><span class="searchIcon">⌕</span><input id="toolsSearch" class="input searchInput" placeholder="Search tools…" /></div></div>
+          <div id="toolsList" class="itemList"></div>
+        </div>
+        <div id="leftEntity" class="leftPage">
+          <div class="searchBar"><div class="searchWrap"><span class="searchIcon">⌕</span><input id="entitySearch" class="input searchInput" placeholder="Search entities…" /></div></div>
+          <div id="entityList" class="itemList"></div>
+        </div>
+
       </section>
 
+      <!-- ══ RIGHT PANEL ══ -->
       <section class="panel right">
+
+        <!-- BROWSE VIEW -->
         <div id="viewBrowse" class="view is-active">
-          <div class="panelHeader">
-            <div class="rightHeaderLine">
-              <div>
-                <div id="selectedItemName" class="panelTitle">Select an item</div>
-                <div id="selectedItemValue" class="muted"></div>
+
+          <!-- ── Food ── -->
+          <div id="browseFood" class="browseSection is-active">
+            <div class="browse-hero">
+              <div class="hero-img-wrap" id="foodImageBox">
+                <span class="imgPlaceholderIcon">🍖</span>
+              </div>
+              <div class="hero-meta">
+                <div class="hero-eyebrow">FOOD ITEM</div>
+                <div id="selectedItemName" class="hero-title">Select an item</div>
+                <div id="selectedItemValue" class="hero-value muted"></div>
+              </div>
+              <div class="hero-deco-lines">
+                <div class="deco-line"></div>
+                <div class="deco-line"></div>
+                <div class="deco-line"></div>
+              </div>
+            </div>
+
+            <div class="content-grid">
+              <div class="box span2" id="foodDroppedByBox" style="display:none;">
+                <div class="boxTitle"><span class="boxIcon">👁</span> Dropped By</div>
+                <div id="foodDroppedByGrid" class="ingredientGrid"></div>
+              </div>
+              <div class="box">
+                <div class="boxTitle"><span class="boxIcon">⚗</span> Affix Values</div>
+                <div id="affixPriceTable" class="tableWrap"></div>
+              </div>
+              <div class="box">
+                <div class="boxTitle"><span class="boxIcon">⚙</span> Combo Builder</div>
+                <div id="affixChecklist" class="checklist"></div>
+                <div class="comboSummary">
+                  <div class="line"><span class="muted">Multiplier</span><span id="comboMultiplier" class="mono val-mult">—</span></div>
+                  <div class="line"><span class="muted">Value</span><span id="comboValue" class="mono big val-money">—</span></div>
+                </div>
+              </div>
+              <div class="box span2">
+                <div class="boxTitle" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                  <span><span class="boxIcon">☣</span> All Combos</span>
+                  <div class="searchWrap" style="margin:0;"><span class="searchIcon">⌕</span><input id="comboSearch" class="input searchInput" placeholder="Filter affixes…" style="width:160px;" /></div>
+                </div>
+                <div id="comboTable" class="tableWrap"></div>
               </div>
             </div>
           </div>
 
-          <div class="rightGrid">
-            <div class="box">
-              <div class="boxTitle">Affix Values</div>
-              <div id="affixPriceTable" class="tableWrap"></div>
+          <!-- ── Dish ── -->
+          <div id="browseDish" class="browseSection">
+            <div class="infoPlaceholder" id="dishPlaceholder">
+              <div class="placeholder-icon-wrap"><span class="placeholder-icon">🍽</span></div>
+              <span class="placeholder-label">Select a dish</span>
             </div>
-
-            <div class="box">
-              <div class="boxTitle">Combo Builder</div>
-              <div id="affixChecklist" class="checklist"></div>
-
-              <div class="comboSummary">
-                <div class="line">
-                  <span class="muted">Multiplier</span>
-                  <span id="comboMultiplier" class="mono">—</span>
+            <div id="dishInfoCard" class="infoCardWrap hidden">
+              <div class="browse-hero">
+                <div class="hero-img-wrap" id="dishImageBox"><span class="imgPlaceholderIcon">🍽</span></div>
+                <div class="hero-meta">
+                  <span class="infoCategory cat-dish">Dish</span>
+                  <div id="dishInfoName" class="hero-title"></div>
+                  <div id="dishInfoValue" class="hero-value muted"></div>
                 </div>
-                <div class="line">
-                  <span class="muted">Value</span>
-                  <span id="comboValue" class="mono big">—</span>
+                <div class="hero-deco-lines"><div class="deco-line"></div><div class="deco-line"></div><div class="deco-line"></div></div>
+              </div>
+              <div class="infoBody">
+                <div class="infoBlock"><div class="infoLabel">Effect</div><div id="dishInfoEffect" class="infoText"></div></div>
+                <div class="infoBlock" id="dishIngredientsBlock">
+                  <div class="infoLabel">Ingredients</div>
+                  <div id="dishInfoIngredients" class="ingredientGrid"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="box">
-            <div class="boxTitle">All Combos</div>
-            <div id="comboTable" class="tableWrap"></div>
+          <!-- ── Tools ── -->
+          <div id="browseTools" class="browseSection">
+            <div class="infoPlaceholder" id="toolsPlaceholder">
+              <div class="placeholder-icon-wrap"><span class="placeholder-icon">🔧</span></div>
+              <span class="placeholder-label">Select a tool</span>
+            </div>
+            <div id="toolsInfoCard" class="infoCardWrap hidden">
+              <div class="browse-hero">
+                <div class="hero-img-wrap" id="toolsImageBox"><span class="imgPlaceholderIcon">🔧</span></div>
+                <div class="hero-meta">
+                  <span class="infoCategory cat-tools">Tool</span>
+                  <div id="toolsInfoName" class="hero-title"></div>
+                  <div id="toolsInfoValue" class="hero-value muted"></div>
+                </div>
+                <div class="hero-deco-lines"><div class="deco-line"></div><div class="deco-line"></div><div class="deco-line"></div></div>
+              </div>
+              <div class="infoBody">
+                <div class="infoBlock"><div class="infoLabel">Effect</div><div id="toolsInfoEffect" class="infoText"></div></div>
+              </div>
+            </div>
           </div>
-        </div>
 
+          <!-- ── Entity ── -->
+          <div id="browseEntity" class="browseSection">
+            <div class="infoPlaceholder" id="entityPlaceholder">
+              <div class="placeholder-icon-wrap"><span class="placeholder-icon">👁</span></div>
+              <span class="placeholder-label">Select an entity</span>
+            </div>
+            <div id="entityInfoCard" class="infoCardWrap hidden">
+              <div class="browse-hero">
+                <div class="hero-img-wrap" id="entityImageBox"><span class="imgPlaceholderIcon">👁</span></div>
+                <div class="hero-meta">
+                  <span class="infoCategory cat-entity">Entity</span>
+                  <div id="entityInfoName" class="hero-title"></div>
+                  <div id="entityInfoValue" class="hero-value muted"></div>
+                </div>
+                <div class="hero-deco-lines"><div class="deco-line"></div><div class="deco-line"></div><div class="deco-line"></div></div>
+              </div>
+              <div class="infoBody">
+                <div class="infoBlock"><div class="infoLabel">Effect</div><div id="entityInfoEffect" class="infoText"></div></div>
+                <div class="infoBlock" id="entityDropsBlock">
+                  <div class="infoLabel">Drops</div>
+                  <div id="entityInfoDrops" class="ingredientGrid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /viewBrowse -->
+
+        <!-- EDITOR VIEW -->
         <div id="viewEdit" class="view">
-          <div class="panelHeader">
-            <div class="editorHeaderRow">
-              <div class="panelTitle">Editor</div>
+          <div class="editor-topbar">
+            <div class="editor-topbar-inner">
+              <div class="hero-title" style="font-size:20px;letter-spacing:1px;">Editor</div>
               <div class="row">
-                <button id="btnResetDefaults" class="btn danger">Reset</button>
-                <button id="btnExport" class="btn">Export</button>
-                <button id="btnImport" class="btn">Import</button>
+                <button id="btnResetDefaults" class="btn danger">↺ Reset</button>
+                <button id="btnExport" class="btn primary2">↓ Export</button>
+                <button id="btnImport" class="btn primary2">↑ Import</button>
               </div>
             </div>
           </div>
 
-          <div class="rightGrid">
-            <div class="box">
-              <div class="boxTitle">Items</div>
-              <input id="newItemName" class="input" placeholder="Name" />
-              <input id="newItemValue" class="input" placeholder="Base Value" inputmode="decimal" />
-              <button id="btnAddItem" class="btn primary">Add Item</button>
-              <div id="editorItems" class="editorList"></div>
-            </div>
-
-            <div class="box">
-              <div class="boxTitle">Affixes</div>
-              <input id="newAffixName" class="input" placeholder="Name" />
-              <input id="newAffixMult" class="input" placeholder="Multiplier" inputmode="decimal" />
-              <button id="btnAddAffix" class="btn primary">Add Affix</button>
-              <div id="editorAffixes" class="editorList"></div>
-            </div>
+          <div class="editorTabBar">
+            <button class="editorTab is-active" data-editortab="food">Food</button>
+            <button class="editorTab" data-editortab="affixes">Affixes</button>
+            <button class="editorTab" data-editortab="dish">Dish</button>
+            <button class="editorTab" data-editortab="tools">Tools</button>
+            <button class="editorTab" data-editortab="entity">Entity</button>
           </div>
 
-          <input id="fileImport" type="file" accept="application/json" class="hidden" />
-        </div>
+          <div id="editorSectionFood" class="editorSection is-active">
+            <div class="editorSectionInner"><div class="box editorBox">
+              <div class="boxTitle"><span class="boxIcon">🍖</span> Food Items</div>
+              <input id="newItemName" class="input" placeholder="Item name" />
+              <input id="newItemValue" class="input" placeholder="Base value" inputmode="decimal" />
+              <div class="imgUrlRow">
+                <div class="imgUrlPreview" id="foodImgPreview"><span class="imgPlaceholderIcon small">🍖</span></div>
+                <input id="foodImgUrl" class="input imgUrlInput" placeholder="Image URL (optional)" />
+              </div>
+              <button id="btnAddItem" class="btn primary full-w">Add / Update Item</button>
+              <div id="editorItems" class="editorList"></div>
+            </div></div>
+          </div>
+
+          <div id="editorSectionAffixes" class="editorSection">
+            <div class="editorSectionInner"><div class="box editorBox">
+              <div class="boxTitle"><span class="boxIcon">✦</span> Affixes</div>
+              <input id="newAffixName" class="input" placeholder="Affix name" />
+              <input id="newAffixMult" class="input" placeholder="Multiplier" inputmode="decimal" />
+              <input id="newAffixColor" class="input" placeholder="Color (hex or gradient)" />
+              <select id="newAffixStatus" class="input sel">
+                <option value="standard">Standard</option>
+                <option value="event">Event</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <button id="btnAddAffix" class="btn primary full-w">Add / Update Affix</button>
+              <div id="editorAffixList" class="editorList"></div>
+            </div></div>
+          </div>
+
+          <div id="editorSectionDish" class="editorSection">
+            <div class="editorSectionInner"><div class="box editorBox">
+              <div class="boxTitle"><span class="boxIcon">🍽</span> Dishes</div>
+              <input id="newDishName" class="input" placeholder="Dish name" />
+              <input id="newDishValue" class="input" placeholder="Base value" inputmode="decimal" />
+              <textarea id="newDishEffect" class="input textarea" placeholder="Effect (leave blank for None)"></textarea>
+              <div class="imgUrlRow">
+                <div class="imgUrlPreview" id="dishImgPreview"><span class="imgPlaceholderIcon small">🍽</span></div>
+                <input id="dishImgUrl" class="input imgUrlInput" placeholder="Image URL (optional)" />
+              </div>
+              <div class="editorSubSection">
+                <div class="editorSubLabel">Ingredients <span class="muted" style="font-size:11px;font-weight:400;">(select food items used in this dish)</span></div>
+                <div id="dishIngredientPicker" class="multiPicker"></div>
+              </div>
+              <button id="btnAddDish" class="btn primary full-w">Add / Update Dish</button>
+              <div id="editorDishList" class="editorList"></div>
+            </div></div>
+          </div>
+
+          <div id="editorSectionTools" class="editorSection">
+            <div class="editorSectionInner"><div class="box editorBox">
+              <div class="boxTitle"><span class="boxIcon">🔧</span> Tools</div>
+              <input id="newToolName" class="input" placeholder="Tool name" />
+              <input id="newToolValue" class="input" placeholder="Base value" inputmode="decimal" />
+              <textarea id="newToolEffect" class="input textarea" placeholder="Effect (leave blank for None)"></textarea>
+              <div class="imgUrlRow">
+                <div class="imgUrlPreview" id="toolsImgPreview"><span class="imgPlaceholderIcon small">🔧</span></div>
+                <input id="toolsImgUrl" class="input imgUrlInput" placeholder="Image URL (optional)" />
+              </div>
+              <button id="btnAddTool" class="btn primary full-w">Add / Update Tool</button>
+              <div id="editorToolsList" class="editorList"></div>
+            </div></div>
+          </div>
+
+          <div id="editorSectionEntity" class="editorSection">
+            <div class="editorSectionInner"><div class="box editorBox">
+              <div class="boxTitle"><span class="boxIcon">👁</span> Entities</div>
+              <input id="newEntityName" class="input" placeholder="Entity name" />
+              <input id="newEntityValue" class="input" placeholder="Base value (0 if N/A)" inputmode="decimal" />
+              <textarea id="newEntityEffect" class="input textarea" placeholder="Effect / description (leave blank for None)"></textarea>
+              <div class="imgUrlRow">
+                <div class="imgUrlPreview" id="entityImgPreview"><span class="imgPlaceholderIcon small">👁</span></div>
+                <input id="entityImgUrl" class="input imgUrlInput" placeholder="Image URL (optional)" />
+              </div>
+              <div class="editorSubSection">
+                <div class="editorSubLabel">Drops <span class="muted" style="font-size:11px;font-weight:400;">(food items &amp; tools dropped by this entity)</span></div>
+                <div id="entityDropsPicker" class="multiPicker"></div>
+              </div>
+              <button id="btnAddEntity" class="btn primary full-w">Add / Update Entity</button>
+              <div id="editorEntityList" class="editorList"></div>
+            </div></div>
+          </div>
+
+          <input id="fileImport" type="file" accept="application/json,.js" class="hidden" />
+        </div><!-- /viewEdit -->
+
       </section>
     </main>
   </div>
 
-  <script src="data.defaults.js"></script>
+  <script src="data_defaults.js"></script>
   <script src="app.js"></script>
-
-  <script>
-  (() => {
-    const btn = document.getElementById("navToggle");
-    const overlay = document.getElementById("navOverlay");
-    const root = document.documentElement;
-
-    if (!btn || !overlay) return;
-
-    const mq = window.matchMedia("(max-width: 700px)");
-    const isMobile = () => mq.matches;
-
-    const setOpen = (open) => {
-      if (!isMobile()) open = false;
-      root.classList.toggle("nav-open", open);
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      overlay.classList.toggle("is-active", open);
-      overlay.setAttribute("aria-hidden", open ? "false" : "true");
-    };
-
-    btn.addEventListener("click", () => {
-      setOpen(!root.classList.contains("nav-open"));
-    });
-
-    overlay.addEventListener("click", () => setOpen(false));
-
-    document.addEventListener("click", (e) => {
-      if (!root.classList.contains("nav-open")) return;
-      const left = document.querySelector(".panel.left");
-      if (!left || !left.contains(e.target)) return;
-
-      if (e.target.closest(".itemRow") || e.target.closest(".leftTab")) {
-        setOpen(false);
-      }
-    }, true);
-    const onChange = () => setOpen(false);
-    mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
-  })();
-  </script>
 </body>
 </html>
-
-
