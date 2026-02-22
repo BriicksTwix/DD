@@ -1,5 +1,5 @@
 (() => {
-  const SHOW_RIGHT_TABS = false;
+  const SHOW_RIGHT_TABS = true;
   const READ_ONLY_MODE  = !SHOW_RIGHT_TABS;
   const STORAGE_KEY     = "item_helper_data_v13";
   const MAX_COMBOS_SAFE = 16384;
@@ -893,3 +893,4 @@
   setLeftPage("food");
   renderAll();
 })();
+
