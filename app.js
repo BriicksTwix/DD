@@ -14,7 +14,10 @@
   const esc   = s => String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
   function safeNumber(s) { const n=Number(String(s).replace(/[^0-9.\-]/g,"")); return Number.isFinite(n)?n:NaN; }
-  function deepCopy(o)   { return JSON.parse(JSON.stringify(o)); }
+  function deepCopy(o) {
+    if (o == null) return o;
+    return JSON.parse(JSON.stringify(o));
+  }
   function slugify(s)    { return String(s).trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,60)||`id_${Math.random().toString(16).slice(2)}`; }
   function clampSize(v,fb=1) { return !Number.isFinite(v)?fb:Math.min(4,Math.max(0,v)); }
   function normName(s)   { return String(s||"").trim().toLowerCase(); }
@@ -893,5 +896,3 @@
   setLeftPage("food");
   renderAll();
 })();
-
-
