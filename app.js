@@ -14,10 +14,7 @@
   const esc   = s => String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
   function safeNumber(s) { const n=Number(String(s).replace(/[^0-9.\-]/g,"")); return Number.isFinite(n)?n:NaN; }
-  function deepCopy(o) {
-    if (o == null) return o;
-    return JSON.parse(JSON.stringify(o));
-  }
+  function deepCopy(o)   { return JSON.parse(JSON.stringify(o)); }
   function slugify(s)    { return String(s).trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,60)||`id_${Math.random().toString(16).slice(2)}`; }
   function clampSize(v,fb=1) { return !Number.isFinite(v)?fb:Math.min(4,Math.max(0,v)); }
   function normName(s)   { return String(s||"").trim().toLowerCase(); }
@@ -56,31 +53,6 @@
     }
   }
 
-  // ── Default data ──
-  const DEFAULT_DISHES = [
-    { id:"mystery_stew",   name:"Mystery Stew",    baseValue:250,  effect:"Restores a moderate amount of health when consumed.", image:"", ingredients:[] },
-    { id:"cursed_broth",   name:"Cursed Broth",    baseValue:500,  effect:"Provides a temporary speed boost but causes vision distortion.", image:"", ingredients:[] },
-    { id:"bone_soup",      name:"Bone Soup",       baseValue:180,  effect:"None", image:"", ingredients:[] },
-    { id:"charred_roast",  name:"Charred Roast",   baseValue:320,  effect:"Grants brief fire resistance.", image:"", ingredients:[] },
-    { id:"shadow_pudding", name:"Shadow Pudding",  baseValue:750,  effect:"Temporarily reduces your visibility to entities.", image:"", ingredients:[] },
-  ];
-  const DEFAULT_TOOLS = [
-    { id:"flashlight", name:"Flashlight",  baseValue:150, effect:"Illuminates dark areas. Attracts certain entities when active.", image:"" },
-    { id:"medkit",     name:"Medkit",      baseValue:300, effect:"Restores a significant amount of health.", image:"" },
-    { id:"radio",      name:"Radio",       baseValue:200, effect:"Distracts entities. Acts as a continuous noise emitter.", image:"" },
-    { id:"lockpick",   name:"Lockpick",    baseValue:120, effect:"Opens locked doors and containers. Single use.", image:"" },
-    { id:"smoke_bomb", name:"Smoke Bomb",  baseValue:400, effect:"Creates a thick smokescreen, temporarily blinding entities.", image:"" },
-    { id:"bear_trap",  name:"Bear Trap",   baseValue:250, effect:"Immobilises entities that step on it for a short duration.", image:"" },
-    { id:"glow_stick", name:"Glow Stick",  baseValue:80,  effect:"Provides dim lighting. Does not attract entities.", image:"" },
-  ];
-  const DEFAULT_ENTITIES = [
-    { id:"the_watcher",  name:"The Watcher",       baseValue:0, effect:"Stalks players from a distance. Does not attack unless approached. Avoid eye contact.", image:"", drops:[] },
-    { id:"crawling_one", name:"The Crawling One",   baseValue:0, effect:"Moves along ceilings and walls. Triggered by sound above a certain threshold.", image:"", drops:[] },
-    { id:"pale_hand",    name:"Pale Hand",          baseValue:0, effect:"Appears behind doors, grabbing through gaps. Stay away from closed doors in dark rooms.", image:"", drops:[] },
-    { id:"the_hollow",   name:"The Hollow",         baseValue:0, effect:"Invisible until within 2 metres. Emits a faint hum — listen carefully.", image:"", drops:[] },
-    { id:"bloom_keeper", name:"Bloom Keeper",       baseValue:0, effect:"Protects Bloom Hearts. Will not leave its territory unless provoked.", image:"", drops:[] },
-  ];
-
   function normalizeKnownAffixes(state) {
     if (!state||!Array.isArray(state.affixes)) return;
     for (const a of state.affixes) {
@@ -102,9 +74,9 @@
   function getDefaultData() {
     const d = deepCopy(window.DEFAULT_DATA);
     ensureFields(d.items);
-    d.dishes   = deepCopy(DEFAULT_DISHES);
-    d.tools    = deepCopy(DEFAULT_TOOLS);
-    d.entities = deepCopy(DEFAULT_ENTITIES);
+    ensureFields(d.dishes,   { ingredients:[] });
+    ensureFields(d.tools);
+    ensureFields(d.entities, { drops:[] });
     normalizeKnownAffixes(d);
     return d;
   }
@@ -114,11 +86,12 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return getDefaultData();
       const p = JSON.parse(raw);
-      if (!p.dishes)   p.dishes   = deepCopy(DEFAULT_DISHES);
-      if (!p.tools)    p.tools    = deepCopy(DEFAULT_TOOLS);
-      if (!p.entities) p.entities = deepCopy(DEFAULT_ENTITIES);
+      const def = window.DEFAULT_DATA;
+      if (!p.dishes)   p.dishes   = deepCopy(def.dishes   || []);
+      if (!p.tools)    p.tools    = deepCopy(def.tools     || []);
+      if (!p.entities) p.entities = deepCopy(def.entities  || []);
       ensureFields(p.items);
-      ensureFields(p.dishes, { ingredients:[] });
+      ensureFields(p.dishes,   { ingredients:[] });
       ensureFields(p.tools);
       ensureFields(p.entities, { drops:[] });
       normalizeKnownAffixes(p);
@@ -221,6 +194,12 @@
   wireUrlPreview(elEntityImgUrl, elEntityImgPrev, "👁");
 
   // ── Tab switching ──
+  // Hide editor tab entirely when SHOW_RIGHT_TABS is false
+  if (!SHOW_RIGHT_TABS) {
+    tabs.forEach(t => { if (t.dataset.tab==="edit") t.style.display="none"; });
+    if (viewEdit) viewEdit.style.display="none";
+  }
+
   function setTab(name) {
     tabs.forEach(t => t.classList.toggle("is-active", t.dataset.tab===name));
     viewBrowse.classList.toggle("is-active", name==="browse");
@@ -348,12 +327,14 @@
     for (let mask=0;mask<total;mask++){const parts=[];for(let i=0;i<n;i++)if(mask&(1<<i))parts.push(affixes[i]);combos.push({eff:effectiveMultiplier(parts),parts});}
     combos.sort((a,b)=>b.eff-a.eff);
 
-    // Filter by search text
+    // Filter by search text — split on commas/spaces, every term must appear in at least one affix
     const q=comboSearchText.trim().toLowerCase();
-    const filtered=q
-      ? combos.filter(c=>c.parts.length===0
-          ? "none".includes(q)
-          : c.parts.some(a=>a.name.toLowerCase().includes(q)))
+    const terms=q ? q.split(/[\s,]+/).filter(Boolean) : [];
+    const filtered=terms.length
+      ? combos.filter(c=>{
+          if (!c.parts.length) return false; // "none" combos hidden when searching
+          return terms.every(term=>c.parts.some(a=>a.name.toLowerCase().includes(term)));
+        })
       : combos;
 
     const totalPages=Math.ceil(filtered.length/COMBOS_PER_PAGE);
@@ -369,7 +350,7 @@
     const safeTotal=totalPages||1;
     html+=`</tbody></table><div class="pagination">
       <button class="btn primary2" id="prevPage" ${comboPage===0?"disabled":""}>← Prev</button>
-      <span class="muted" style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;">Page ${comboPage+1} of ${safeTotal}${q?` (${filtered.length} results)`:""}</span>
+      <span class="muted" style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;">Page ${comboPage+1} of ${safeTotal}${terms.length?` (${filtered.length} results)`:""}</span>
       <button class="btn primary2" id="nextPage" ${comboPage>=safeTotal-1?"disabled":""}>Next →</button>
     </div>`;
     elComboTable.innerHTML=html;
@@ -739,9 +720,10 @@
           parsed=JSON.parse(m[1]);
         }
         if (!parsed.items||!parsed.affixes) throw new Error("Missing items or affixes");
-        if (!parsed.dishes)   parsed.dishes  =deepCopy(DEFAULT_DISHES);
-        if (!parsed.tools)    parsed.tools   =deepCopy(DEFAULT_TOOLS);
-        if (!parsed.entities) parsed.entities=deepCopy(DEFAULT_ENTITIES);
+        const def = window.DEFAULT_DATA;
+        if (!parsed.dishes)   parsed.dishes   = deepCopy(def.dishes   || []);
+        if (!parsed.tools)    parsed.tools    = deepCopy(def.tools     || []);
+        if (!parsed.entities) parsed.entities = deepCopy(def.entities  || []);
         ensureFields(parsed.items);
         ensureFields(parsed.dishes,{ingredients:[]});
         ensureFields(parsed.tools);
